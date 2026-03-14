@@ -2,3 +2,5 @@
 
 data/external/*
 data/vectorstore/*
+
+configs/config.local.yaml
