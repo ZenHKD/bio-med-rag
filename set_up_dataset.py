@@ -1,0 +1,57 @@
+import json
+import os
+import shutil
+import zipfile
+from pathlib import Path
+
+from huggingface_hub import snapshot_download
+
+BASE_DIR = os.getcwd()
+
+if not (BASE_DIR.endswith("bio-med-rag")):
+    raise ValueError("Please run this script from the bio-med-rag directory")
+
+data_dir = os.path.join(BASE_DIR, "data")
+
+os.makedirs(data_dir, exist_ok=True)
+
+external_data_dir = os.path.join(data_dir, "external")
+os.makedirs(external_data_dir, exist_ok=True)
+
+vectorstore_data_dir = os.path.join(data_dir, "vectorstore")
+os.makedirs(vectorstore_data_dir, exist_ok=True)
+
+snapshot_download(
+    repo_id="zinzinmit/MedNLPCombined",
+    repo_type="dataset",
+    allow_patterns="bc5cdr/**",
+    local_dir=external_data_dir
+)
+
+snapshot_download(
+    repo_id="zinzinmit/MedNLPCombined",
+    repo_type="dataset",
+    allow_patterns="ChemDisGene/**",
+    local_dir=external_data_dir
+)
+
+snapshot_download(
+    repo_id="zinzinmit/MedNLPCombined",
+    repo_type="dataset",
+    allow_patterns="bioasq/**",
+    local_dir=external_data_dir
+)
+
+snapshot_download(
+    repo_id="zinzinmit/MedNLPCombined",
+    repo_type="dataset",
+    allow_patterns="medqa/**",
+    local_dir=external_data_dir
+)
+
+snapshot_download(
+    repo_id="zinzinmit/MedNLPCombined",
+    repo_type="dataset",
+    allow_patterns="pubmedqa/**",
+    local_dir=external_data_dir
+)

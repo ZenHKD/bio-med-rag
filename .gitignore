@@ -1,0 +1,4 @@
+.env
+
+data/external/*
+data/vectorstore/*
