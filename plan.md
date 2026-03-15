@@ -26,7 +26,7 @@ graph TD
         CONCAT["Concat & Save<br/>knowledge.json (PubMedQA + MedQA)<br/>bioasq.json (eval)"]
     end
 
-    subgraph "🧠 Encoder & Indexing"
+    subgraph "🧠 Encoder & Indexing ✅ DONE"
         EMB["Embedding Model (Encoder)<br/>(BAAI/bge-small-en-v1.5)<br/>🖥️ CPU"]
         CH["Chunker<br/>(RecursiveCharacterTextSplitter<br/>512 chars, 64 overlap)"]
         VS["Vectorstore<br/>(ChromaDB / FAISS)"]
