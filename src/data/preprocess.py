@@ -6,8 +6,11 @@ import json
 import sys
 from tqdm import tqdm
 
-# run this on the root of the project 
+# Run this on the root of the project 
 FILE_DIR = os.getcwd()
+
+if not (FILE_DIR.endswith("bio-med-rag")):
+    raise ValueError("Please run this script from the bio-med-rag directory")
 
 PROCESSED_DATA_DIR = os.path.join(FILE_DIR, "data", "processed")
 os.makedirs(PROCESSED_DATA_DIR, exist_ok=True)
