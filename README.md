@@ -87,7 +87,14 @@ Anything not specified here falls back to `configs/config.yaml`.
 python set_up_dataset.py
 ```
 
-## 4. Build vectorstore & run a query
+## 4. Preprocess (pubmedqa, medqa textbooks and bioasq) and concat datasets (pubmedqa & medqa)
+
+```bash
+python src/data/preprocess.py
+```
+
+
+## 5. Build vectorstore & run a query
 
 ```bash
 python scripts/ingest.py

@@ -21,6 +21,7 @@ os.makedirs(external_data_dir, exist_ok=True)
 vectorstore_data_dir = os.path.join(data_dir, "vectorstore")
 os.makedirs(vectorstore_data_dir, exist_ok=True)
 
+"""
 snapshot_download(
     repo_id="zinzinmit/MedNLPCombined",
     repo_type="dataset",
@@ -34,6 +35,8 @@ snapshot_download(
     allow_patterns="ChemDisGene/**",
     local_dir=external_data_dir
 )
+
+"""
 
 snapshot_download(
     repo_id="zinzinmit/MedNLPCombined",
