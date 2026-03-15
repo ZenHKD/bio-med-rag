@@ -104,7 +104,13 @@ python src/data/preprocess.py
 python src/data/chunker.py
 ```
 
-## 6. Build vectorstore & run a query
+## 6. Indexing & Embedding
+
+```bash
+python src/embeddings/encoder.py
+```
+
+## 7. Build vectorstore & run a query
 
 ```bash
 python scripts/ingest.py
