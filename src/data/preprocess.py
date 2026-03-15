@@ -24,7 +24,7 @@ def preprocess_pubmedqa(pubmedqa):
     for _, r in tqdm(df.iterrows(), total=len(df), desc="PubMedQA"):
         docs.append({
             "doc_id": r["pubid"],
-            "text": " ".join(r["context"]["contexts"]),  # ghép list -> 1 string
+            "text": " ".join(r["context"]["contexts"]),  # Concat list -> 1 string
             "source": "pubmedqa"
         })
     return docs
@@ -44,7 +44,7 @@ def preprocess_bioasq(bioasq):
 
 
 def clean_line(line: str) -> str:
-    """Clean noise trên từng dòng riêng lẻ."""
+    """Clean noise on each line."""
     line = re.sub(r'^\s*[IVXLCDM]+\.\s+[A-Z\s]+$', '', line)
 
 
@@ -100,17 +100,17 @@ def clean_line(line: str) -> str:
 
 
 def clean_medical_book_txt(text: str) -> str:
-    """Clean trên toàn bộ text sau khi đã join các dòng."""
+    """Clean on the entire text after joining lines."""
 
-    # Figure blocks (cần DOTALL — phải clean trên full text)
+    # Figure blocks (need DOTALL — must clean on full text)
     text = re.sub(r'(fig\.?|figure)\s*\d+[\.\-]?\d*.*?(\n\n|\Z)',
                   '', text, flags=re.IGNORECASE | re.DOTALL)
 
-    # References section (cần DOTALL)
+    # References section (need DOTALL)
     text = re.sub(r'\n(references|bibliography|further reading)\n.*',
                   '', text, flags=re.DOTALL | re.IGNORECASE)
 
-    # Fix hyphenated line breaks (cần xử lý \n)
+    # Fix hyphenated line breaks (need to handle \n)
     text = re.sub(r'(\w+)-\n(\w+)', r'\1\2', text)
 
     # Normalize whitespace
@@ -127,14 +127,14 @@ def preprocess_medqa(medqa_txt):
         with open(os.path.join(medqa_txt, filename), "r", encoding="utf-8", errors="ignore") as f:
             raw_lines = f.readlines()
 
-        # Pass 1: clean từng dòng
+        # Pass 1: Clean each line
         cleaned_lines = []
         for line in raw_lines:
             cleaned = clean_line(line)
             if cleaned:
                 cleaned_lines.append(cleaned)
 
-        # Pass 2: clean toàn block (patterns cần DOTALL)
+        # Pass 2: Clean entire block (patterns need DOTALL)
         joined = " ".join(cleaned_lines)
         cleaned_text = clean_medical_book_txt(joined)
 
@@ -152,7 +152,6 @@ if __name__ == "__main__":
     bioasq_docs = preprocess_bioasq(bioasq)
     medqa_docs = preprocess_medqa(medqa_txt)
 
-    # Fix: os.makedirs chỉ nhận 1 path, dùng os.path.join
     knowledge_dir = os.path.join(PROCESSED_DATA_DIR, "knowledge")
     bioasq_dir = os.path.join(PROCESSED_DATA_DIR, "bioasq")
     os.makedirs(knowledge_dir, exist_ok=True)
