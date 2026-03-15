@@ -38,6 +38,11 @@ bio-med-rag/
 └── README.md
 ```
 
+# Pipeline
+
+Query → [Encoder] → Retrieve Chunks → [Reranker?] → [Decoder LLM] → Generated Answer
+
+
 # Setup
 
 ## 1. Environment variables
