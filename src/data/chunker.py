@@ -39,7 +39,7 @@ def chunk_medqa(text, size, overlap):
 
 def chunking(JSON_FILE):
     size= 512
-    overlap= 50
+    overlap= 64
     chunks= []
 
 
