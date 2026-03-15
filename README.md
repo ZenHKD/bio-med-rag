@@ -98,8 +98,13 @@ python set_up_dataset.py
 python src/data/preprocess.py
 ```
 
+## 5. Chunking 
 
-## 5. Build vectorstore & run a query
+```bash
+python src/data/chunker.py
+```
+
+## 6. Build vectorstore & run a query
 
 ```bash
 python scripts/ingest.py
