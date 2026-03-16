@@ -33,7 +33,7 @@ if __name__ == "__main__":
         docs= json.load(f)
 
     texts= [d["text"] for d in docs]
-    batch_size= 512
+    batch_size= 16
     model_name= "NeuML/pubmedbert-base-embeddings"
 
     embed_model= Encoder(texts, batch_size,  model_name, device)
