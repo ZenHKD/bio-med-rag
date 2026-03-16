@@ -2,9 +2,6 @@ from typing import List
 
 from langchain_core.documents import Document
 from langchain_community.retrievers import BM25Retriever
-from langchain.retrievers import EnsembleRetriever, ContextualCompressionRetriever
-from langchain_community.cross_encoders import HuggingFaceCrossEncoder
-from langchain_community.document_compressors import CrossEncoderReranker
 
 from src.vectorstore.store import VectorStore
 
@@ -28,6 +25,8 @@ def get_baseline_retriever(store: VectorStore, k: int = 5):
 
 
 def get_hybrid_retriever(store: VectorStore, k: int = 5, bm25_weight: float = 0.5):
+    from langchain_community.retrievers import EnsembleRetriever
+
     dense_retriever = store.as_retriever(k=k)
 
     documents = _chunks_to_documents(store)
@@ -46,6 +45,10 @@ def get_reranking_retriever(
     bm25_weight: float = 0.5,
     reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
 ):
+    from langchain.retrievers import ContextualCompressionRetriever
+    from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+    from langchain_community.document_compressors import CrossEncoderReranker
+
     hybrid = get_hybrid_retriever(store, k=k, bm25_weight=bm25_weight)
 
     cross_encoder = HuggingFaceCrossEncoder(model_name=reranker_model)
