@@ -13,7 +13,7 @@ FILE_DIR = os.getcwd()
 if not (FILE_DIR.endswith("bio-med-rag")):
     raise ValueError("Please run this script from the bio-med-rag directory")
 
-project_root = Path(__file__).parent.parent  # Lên 2 cấp: scripts/ -> bio-med-rag/
+project_root = Path(__file__).parent.parent  # scripts/ -> bio-med-rag/
 sys.path.insert(0, str(project_root))
 
 
