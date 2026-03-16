@@ -107,7 +107,7 @@ python src/data/chunker.py
 ## 6. Indexing & Embedding
 
 ```bash
-python src/embeddings/encoder.py
+python scripts/ingest.py
 ```
 
 ## 7. Build vectorstore & run a query
