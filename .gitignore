@@ -6,4 +6,4 @@ data/processed/*
 
 configs/config.local.yaml
 
-__pycache__/*
+*__pycache__*

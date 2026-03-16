@@ -59,58 +59,31 @@ HF_TOKEN=hf_your_token_here
 # COHERE_API_KEY=...   (optional, only if using Cohere reranker)
 ```
 
-## 2. Personal config override
-
-> **Do not edit `configs/config.yaml` directly** — it holds shared defaults and is git-tracked.
-
-```bash
-cp configs/config.local.yaml.example configs/config.local.yaml
-```
-
-`configs/config.local.yaml` is gitignored. Open it and uncomment only the fields you want to change, for example:
-
-```yaml
-encoder:
-  model_name: "BAAI/bge-base-en-v1.5"
-  device: cuda
-
-decoder:
-  model_name: "BioMistral/BioMistral-7B"
-  device: cuda
-
-reranker:
-  enabled: true
-  provider: cross_encoder
-  top_n: 3
-```
-
-Anything not specified here falls back to `configs/config.yaml`.
-
-## 3. Download datasets
+## 2. Download datasets
 
 ```bash
 python set_up_dataset.py
 ```
 
-## 4. Preprocess (pubmedqa, medqa textbooks and bioasq) and concat datasets (pubmedqa & medqa)
+## 3. Preprocess (pubmedqa, medqa textbooks and bioasq) and concat datasets (pubmedqa & medqa)
 
 ```bash
 python src/data/preprocess.py
 ```
 
-## 5. Chunking 
+## 4. Chunking 
 
 ```bash
 python src/data/chunker.py
 ```
 
-## 6. Indexing & Embedding
+## 5. Indexing & Embedding
 
 ```bash
 python scripts/ingest.py
 ```
 
-## 7. Build vectorstore & run a query
+## 6. Build vectorstore & run a query
 
 ```bash
 python scripts/ingest.py
