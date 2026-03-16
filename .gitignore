@@ -5,3 +5,5 @@ data/vectorstore/*
 data/processed/*
 
 configs/config.local.yaml
+
+__pycache__/*
