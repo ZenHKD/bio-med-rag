@@ -58,3 +58,10 @@ snapshot_download(
     allow_patterns="pubmedqa/**",
     local_dir=external_data_dir
 )
+
+snapshot_download(
+    repo_id="ngocnvh/medmcqa",
+    repo_type="dataset",
+    allow_patterns="medmcqa/**",
+    local_dir=external_data_dir,
+)

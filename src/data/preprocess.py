@@ -18,7 +18,7 @@ os.makedirs(PROCESSED_DATA_DIR, exist_ok=True)
 pubmedqa = os.path.join(FILE_DIR, "data", "external", "pubmedqa", "pubmedqa.csv")
 medqa_txt = os.path.join(FILE_DIR, "data", "external", "medqa", "textbooks")
 bioasq = os.path.join(FILE_DIR, "data", "external", "bioasq", "task_b", "bioasq.csv")
-
+medmcqa = os.path.join(FILE_DIR, "data", "external", "medmcqa", "original.json")
 
 def preprocess_pubmedqa(pubmedqa):
     df = pd.read_csv(pubmedqa)
@@ -149,16 +149,51 @@ def preprocess_medqa(medqa_txt):
         })
     return docs
 
+import json
+
+def preprocess_medmcqa(file_path):
+    processed = []
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        for line in tqdm(f, desc= "MedMCQA"):
+            q = json.loads(line)
+
+            options = {
+                "A": q["opa"],
+                "B": q["opb"],
+                "C": q["opc"],
+                "D": q["opd"]
+            }
+
+            answer_letter = ["A","B","C","D"][q["cop"] - 1]
+
+            question_text = q["question"] + "\n\n"
+
+            for k, v in options.items():
+                question_text += f"{k}. {v}\n"
+
+            processed.append({
+                "question": question_text.strip(),
+                "answer": answer_letter
+            })
+
+    return processed
+
 
 if __name__ == "__main__":
     pubmedqa_docs = preprocess_pubmedqa(pubmedqa)
     bioasq_docs = preprocess_bioasq(bioasq)
     medqa_docs = preprocess_medqa(medqa_txt)
+    medmcqa_docs= preprocess_medmcqa(medmcqa)
 
     knowledge_dir = os.path.join(PROCESSED_DATA_DIR, "knowledge")
     bioasq_dir = os.path.join(PROCESSED_DATA_DIR, "bioasq")
+    medmcqa_dir = os.path.join(PROCESSED_DATA_DIR, "medmcqa")
+
     os.makedirs(knowledge_dir, exist_ok=True)
     os.makedirs(bioasq_dir, exist_ok=True)
+    os.makedirs(medmcqa_dir, exist_ok=True)
+
 
     print("Saving knowledge.json...")
     with open(os.path.join(knowledge_dir, "knowledge.json"), "w", encoding="utf-8") as f:
@@ -168,7 +203,14 @@ if __name__ == "__main__":
     with open(os.path.join(bioasq_dir, "bioasq.json"), "w", encoding="utf-8") as f:
         json.dump(bioasq_docs, f, ensure_ascii=False, indent=2)
 
+    print("Saving medmcqa.json...")
+    with open(os.path.join(medmcqa_dir, "medmcqa.json"), "w", encoding="utf-8") as f:
+        json.dump(medmcqa_docs, f, ensure_ascii=False, indent=2)
+
+
+
     print("Done!")
+
 
 
     
