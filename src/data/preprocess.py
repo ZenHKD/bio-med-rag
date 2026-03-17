@@ -6,19 +6,17 @@ import json
 import sys
 from tqdm import tqdm
 
+from pathlib import Path
 # Run this on the root of the project 
-FILE_DIR = os.getcwd()
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
-if not (FILE_DIR.endswith("bio-med-rag")):
-    raise ValueError("Please run this script from the bio-med-rag directory")
-
-PROCESSED_DATA_DIR = os.path.join(FILE_DIR, "data", "processed")
+PROCESSED_DATA_DIR = os.path.join(ROOT_DIR, "data", "processed")
 os.makedirs(PROCESSED_DATA_DIR, exist_ok=True)
 
-pubmedqa = os.path.join(FILE_DIR, "data", "external", "pubmedqa", "pubmedqa.csv")
-medqa_txt = os.path.join(FILE_DIR, "data", "external", "medqa", "textbooks")
-bioasq = os.path.join(FILE_DIR, "data", "external", "bioasq", "task_b", "bioasq.csv")
-medmcqa = os.path.join(FILE_DIR, "data", "external", "medmcqa", "original.json")
+pubmedqa = os.path.join(ROOT_DIR, "data", "external", "pubmedqa", "pubmedqa.csv")
+medqa_txt = os.path.join(ROOT_DIR, "data", "external", "medqa", "textbooks")
+bioasq = os.path.join(ROOT_DIR, "data", "external", "bioasq", "task_b", "bioasq.csv")
+medmcqa = os.path.join(ROOT_DIR, "data", "external", "medmcqa", "original.json")
 
 def preprocess_pubmedqa(pubmedqa):
     df = pd.read_csv(pubmedqa)
@@ -32,7 +30,6 @@ def preprocess_pubmedqa(pubmedqa):
         })
     return docs
 
-
 def preprocess_bioasq(bioasq):
     df = pd.read_csv(bioasq)
     df["ideal_answer"] = df["ideal_answer"].apply(ast.literal_eval)
@@ -44,7 +41,6 @@ def preprocess_bioasq(bioasq):
             "ideal_answer": r["ideal_answer"][0]
         })
     return docs
-
 
 def clean_line(line: str) -> str:
     """Clean noise on each line."""
@@ -101,7 +97,6 @@ def clean_line(line: str) -> str:
 
     return line.strip()
 
-
 def clean_medical_book_txt(text: str) -> str:
     """Clean on the entire text after joining lines."""
 
@@ -121,7 +116,6 @@ def clean_medical_book_txt(text: str) -> str:
     text = re.sub(r'[ \t]{2,}', ' ', text)
 
     return text.strip()
-
 
 def preprocess_medqa(medqa_txt):
     docs = []
@@ -148,8 +142,6 @@ def preprocess_medqa(medqa_txt):
             "source": "medqa"
         })
     return docs
-
-import json
 
 def preprocess_medmcqa(file_path):
     processed = []

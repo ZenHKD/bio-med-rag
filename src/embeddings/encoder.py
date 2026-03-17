@@ -1,11 +1,6 @@
 from sentence_transformers import SentenceTransformer
 import os
 
-FILE_DIR = os.getcwd()
-
-if not (FILE_DIR.endswith("bio-med-rag")):
-    raise ValueError("Please run this script from the bio-med-rag directory")
-
 class Encoder():
     def __init__(self, texts, batch_size, model_name, device):
         self.texts= texts

@@ -6,12 +6,9 @@ from pathlib import Path
 
 from huggingface_hub import snapshot_download
 
-BASE_DIR = os.getcwd()
+ROOT_DIR = Path(__file__).resolve().parent
 
-if not (BASE_DIR.endswith("bio-med-rag")):
-    raise ValueError("Please run this script from the bio-med-rag directory")
-
-data_dir = os.path.join(BASE_DIR, "data")
+data_dir = os.path.join(ROOT_DIR, "data")
 
 os.makedirs(data_dir, exist_ok=True)
 

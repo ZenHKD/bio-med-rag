@@ -3,14 +3,12 @@ from tqdm import tqdm
 import os 
 import json 
 import re
+from pathlib import Path
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+
 # use word-based chunking for pubmedqa & RecursiveCharacterTextSplitter for medqa textbooks
 
-FILE_DIR = os.getcwd()
-
-if not (FILE_DIR.endswith("bio-med-rag")):
-    raise ValueError("Please run this script from the bio-med-rag directory")
-
-PROCESSED_DATA_DIR = os.path.join(FILE_DIR, "data", "processed", "knowledge")
+PROCESSED_DATA_DIR = os.path.join(ROOT_DIR, "data", "processed", "knowledge")
 
 JSON_FILE= os.path.join(PROCESSED_DATA_DIR, "knowledge.json")
 OUTPUT_FILE= "chunks.jsonl"

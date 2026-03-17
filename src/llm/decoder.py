@@ -12,7 +12,7 @@ Usage:
 
 from langchain_openai import ChatOpenAI
 
-DEFAULT_BASE_URL    = "http://localhost:8080/v1"
+DEFAULT_BASE_URL    = "http://127.0.0.1:8080/v1"
 DEFAULT_MODEL_NAME  = "BioMistral/BioMistral-7B-AWQ-QGS128-W4-GEMM"
 DEFAULT_TEMPERATURE = 0.0
 DEFAULT_MAX_TOKENS  = 512

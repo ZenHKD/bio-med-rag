@@ -7,24 +7,17 @@ import faiss
 import sys
 from pathlib import Path
 
-FILE_DIR = os.getcwd()
-
-
-if not (FILE_DIR.endswith("bio-med-rag")):
-    raise ValueError("Please run this script from the bio-med-rag directory")
-
-project_root = Path(__file__).parent.parent  # scripts/ -> bio-med-rag/
+project_root = Path(__file__).resolve().parent.parent  # scripts/ -> bio-med-rag/
 sys.path.insert(0, str(project_root))
-
 
 from src.embeddings.encoder import Encoder 
 
-VECTORSTORE_DIR= os.path.join(FILE_DIR, "data", "vectorstore")
+VECTORSTORE_DIR= os.path.join(project_root, "data", "vectorstore")
 
 INDEX_FILE= "index.bin"
 EMBED_FILE= "embeddings.npy"
 
-JSONL_FILE= os.path.join(FILE_DIR, "data", "processed", "knowledge", "chunks.jsonl")
+JSONL_FILE= os.path.join(project_root, "data", "processed", "knowledge", "chunks.jsonl")
 
 if __name__ == "__main__":
     device= "cuda" if torch.cuda.is_available() else "cpu"
