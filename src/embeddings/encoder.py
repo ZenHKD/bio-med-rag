@@ -22,14 +22,3 @@ class Encoder():
         batch_size= self.batch_size,
         convert_to_numpy= True,
         normalize_embeddings=True)
-
-    
-
-    
-
-
-
-
-
-    
-    

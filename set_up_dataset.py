@@ -29,7 +29,7 @@ snapshot_download(
 snapshot_download(
     repo_id="zinzinmit/MedNLPCombined",
     repo_type="dataset",
-    allow_patterns="ChemDisGene/**",
+    allow_patterns="ChemDisGene/**"
     local_dir=external_data_dir
 )
 
