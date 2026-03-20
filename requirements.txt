@@ -27,8 +27,6 @@ omegaconf>=2.3.0
 python-dotenv>=1.0.0
 huggingface_hub>=0.20.0
 
-# --- Evaluation ---
-ragas>=0.1.0
 
 # --- BM25 Retrieval ---
 rank-bm25>=0.2.2

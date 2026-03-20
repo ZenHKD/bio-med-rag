@@ -8,3 +8,5 @@ configs/config.local.yaml
 
 *__pycache__*
 /logs
+
+src/evaluation/llm_eval.json
