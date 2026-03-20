@@ -33,14 +33,14 @@ snapshot_download(
     local_dir=external_data_dir
 )
 
-"""
-
 snapshot_download(
     repo_id="zinzinmit/MedNLPCombined",
     repo_type="dataset",
     allow_patterns="bioasq/**",
     local_dir=external_data_dir
 )
+
+"""
 
 snapshot_download(
     repo_id="zinzinmit/MedNLPCombined",
