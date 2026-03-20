@@ -81,6 +81,7 @@ class _Reranker:
                 prompts,
                 padding=True,
                 truncation=True,
+                max_length=1024,       
                 return_tensors="pt",
             ).to(self.device)
 
@@ -132,25 +133,17 @@ def rerank(
     query: str,
     k: int = DEFAULT_K_RERANK,
     model_name: str = DEFAULT_RERANKER_MODEL,
+    reranker_batch: int = 8,
 ) -> List[Document]:
     """
     Rerank documents with Qwen3-Reranker-0.6B and return the top-k.
-
-    Args:
-        docs:       Candidate documents from dense_retrieve.
-        query:      Raw question string.
-        k:          Number of documents to keep after reranking.
-        model_name: HuggingFace model ID for the reranker.
-
-    Returns:
-        Top-k Documents sorted by reranker score (descending).
     """
     if not docs:
         return []
 
     reranker = _get_reranker(model_name)
     texts  = [doc.page_content for doc in docs]
-    scores = reranker.score(query, texts)
+    scores = reranker.score(query, texts, batch_size=reranker_batch)
 
     # Attach reranker score to metadata and sort
     scored = sorted(
@@ -173,19 +166,10 @@ def retrieve_and_rerank(
     K: int = DEFAULT_K_RETRIEVE,
     k: int = DEFAULT_K_RERANK,
     reranker_model: str = DEFAULT_RERANKER_MODEL,
+    reranker_batch: int = 8,
 ) -> List[Document]:
     """
     Full pipeline convenience function: dense retrieve → rerank.
-
-    Args:
-        store:          Loaded VectorStore.
-        query:          Raw question string.
-        K:              Dense retrieval candidate count (e.g. 100).
-        k:              Final count after reranking (e.g. 5).
-        reranker_model: HuggingFace model ID for the reranker.
-
-    Returns:
-        Top-k reranked Documents.
     """
     candidates = dense_retrieve(store, query, K=K)
-    return rerank(candidates, query, k=k, model_name=reranker_model)
+    return rerank(candidates, query, k=k, model_name=reranker_model, reranker_batch=reranker_batch)
