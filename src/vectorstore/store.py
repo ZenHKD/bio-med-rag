@@ -16,7 +16,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 DEFAULT_INDEX_PATH  = str(PROJECT_ROOT / "data" / "vectorstore" / "index.bin")
 DEFAULT_CHUNKS_PATH = str(PROJECT_ROOT / "data" / "processed" / "knowledge" / "chunks.jsonl")
-DEFAULT_EMBED_MODEL = "NeuML/pubmedbert-base-embeddings"
+DEFAULT_EMBED_MODEL = "Qwen/Qwen3-Embedding-0.6B"
 DEFAULT_BATCH_SIZE  = 16
 
 
@@ -28,7 +28,8 @@ class VectorStore:
         chunks_path: str = DEFAULT_CHUNKS_PATH,
         embed_model_name: str = DEFAULT_EMBED_MODEL,
         batch_size: int = DEFAULT_BATCH_SIZE,
-        device: str = "cpu",
+        device: str = "cuda",
+        embed_device: str = "cpu",   # keep encoder on CPU to free GPU for LLM + reranker
     ):
         self.embed_model_name = embed_model_name
         self.batch_size = batch_size
@@ -41,11 +42,13 @@ class VectorStore:
         if not os.path.exists(chunks_path):
             raise FileNotFoundError(f"Chunks file not found: {chunks_path}")
         with open(chunks_path, "r") as f:
-            self.chunks = json.load(f)
+            self.chunks = [json.loads(line) for line in f if line.strip()]
+
+        # Pre-load encoder on CPU — saves ~1.5GB GPU VRAM for LLM + reranker
+        self._encoder = Encoder([], batch_size, embed_model_name, embed_device)
 
     def search(self, query: str, k: int = 5) -> List[Document]:
-        encoder = Encoder([query], self.batch_size, self.embed_model_name, self.device)
-        q_vec = encoder.encode().astype("float32")
+        q_vec = self._encoder.encode_query(query).astype("float32")
 
         distances, indices = self.index.search(q_vec, k)
 

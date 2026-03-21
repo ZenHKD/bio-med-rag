@@ -15,7 +15,6 @@ os.makedirs(PROCESSED_DATA_DIR, exist_ok=True)
 
 pubmedqa = os.path.join(ROOT_DIR, "data", "external", "pubmedqa", "pubmedqa.csv")
 medqa_txt = os.path.join(ROOT_DIR, "data", "external", "medqa", "textbooks")
-bioasq = os.path.join(ROOT_DIR, "data", "external", "bioasq", "task_b", "bioasq.csv")
 medmcqa = os.path.join(ROOT_DIR, "data", "external", "medmcqa", "original.json")
 
 def preprocess_pubmedqa(pubmedqa):
@@ -30,17 +29,6 @@ def preprocess_pubmedqa(pubmedqa):
         })
     return docs
 
-def preprocess_bioasq(bioasq):
-    df = pd.read_csv(bioasq)
-    df["ideal_answer"] = df["ideal_answer"].apply(ast.literal_eval)
-    docs = []
-    for _, r in tqdm(df.iterrows(), total=len(df), desc="BioASQ"):
-        docs.append({
-            "question_id": r["id"],
-            "question": r["body"],
-            "ideal_answer": r["ideal_answer"][0]
-        })
-    return docs
 
 def clean_line(line: str) -> str:
     """Clean noise on each line."""
@@ -174,35 +162,21 @@ def preprocess_medmcqa(file_path):
 
 if __name__ == "__main__":
     pubmedqa_docs = preprocess_pubmedqa(pubmedqa)
-    bioasq_docs = preprocess_bioasq(bioasq)
     medqa_docs = preprocess_medqa(medqa_txt)
     medmcqa_docs= preprocess_medmcqa(medmcqa)
 
     knowledge_dir = os.path.join(PROCESSED_DATA_DIR, "knowledge")
-    bioasq_dir = os.path.join(PROCESSED_DATA_DIR, "bioasq")
     medmcqa_dir = os.path.join(PROCESSED_DATA_DIR, "medmcqa")
 
     os.makedirs(knowledge_dir, exist_ok=True)
-    os.makedirs(bioasq_dir, exist_ok=True)
     os.makedirs(medmcqa_dir, exist_ok=True)
-
 
     print("Saving knowledge.json...")
     with open(os.path.join(knowledge_dir, "knowledge.json"), "w", encoding="utf-8") as f:
         json.dump(pubmedqa_docs + medqa_docs, f, ensure_ascii=False, indent=2)
 
-    print("Saving bioasq.json...")
-    with open(os.path.join(bioasq_dir, "bioasq.json"), "w", encoding="utf-8") as f:
-        json.dump(bioasq_docs, f, ensure_ascii=False, indent=2)
-
     print("Saving medmcqa.json...")
     with open(os.path.join(medmcqa_dir, "medmcqa.json"), "w", encoding="utf-8") as f:
         json.dump(medmcqa_docs, f, ensure_ascii=False, indent=2)
 
-
-
     print("Done!")
-
-
-
-    

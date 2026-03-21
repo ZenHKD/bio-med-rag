@@ -1,118 +1,103 @@
-import torch
-import os
-import json
-import numpy as np
-import faiss
-import sys
+"""
+Interactive CLI demo for the bio-med RAG pipeline.
+
+Usage:
+    python scripts/query.py
+    python scripts/query.py --K 100 --k 5 --model Qwen/Qwen3.5-4B
+    python scripts/query.py --thinking --max_new_tokens 1024
+
+Type your question at the prompt, then press Enter.
+Type 'exit' or 'quit' to stop.
+"""
+
 import argparse
-import requests
+import sys
+import textwrap
 from pathlib import Path
 
-FILE_DIR = Path(__file__).parent.parent  
-sys.path.insert(0, str(FILE_DIR))
+# Allow running from project root without installing the package
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.embeddings.encoder import Encoder
-# Paths
-VECTORSTORE_DIR = os.path.join(FILE_DIR, "data", "vectorstore")
-INDEX_FILE      = "index.bin"
-CHUNKS_FILE     = os.path.join(FILE_DIR, "data", "processed", "knowledge", "chunks.jsonl")
-
-# vLLM server
-VLLM_URL   = "http://127.0.0.1:8080/v1/chat/completions"
-MODEL_NAME = "BioMistral/BioMistral-7B-AWQ-QGS128-W4-GEMM"
-
-EMBED_MODEL_NAME = "NeuML/pubmedbert-base-embeddings"
-BATCH_SIZE       = 16
-TOP_K            = 5
-
-# Prompt — loaded from prompt.txt
-_PROMPT_FILE  = Path(__file__).parent / "prompt.txt"
-SYSTEM_PROMPT = _PROMPT_FILE.read_text(encoding="utf-8").strip()
-
-device = "cuda" if torch.cuda.is_available() else "cpu"
-
-class Bio_RAG:
-    def __init__(self):
-        pass
-
-    def build_prompt(self, context: str, question: str) -> str:
-        return f"Context:\n{context}\n\nQuestion: {question}\nAnswer:"
+from src.vectorstore.store import VectorStore
+from src.pipeline.rag_chain import RAGPipeline
 
 
-    def embed_question(self, question: str, device: str) -> np.ndarray:
-        encoder = Encoder([question], BATCH_SIZE, EMBED_MODEL_NAME, device)
-        vec = encoder.encode()          # shape (1, dim)
-        return vec.astype("float32")
+def parse_args():
+    parser = argparse.ArgumentParser(description="Bio-Med RAG CLI demo")
+    parser.add_argument("--K", type=int, default=100,
+                        help="Number of FAISS candidates (default: 100)")
+    parser.add_argument("--k", type=int, default=5,
+                        help="Number of docs after reranking (default: 5)")
+    parser.add_argument("--model", type=str, default="Qwen/Qwen3.5-4B",
+                        help="LLM model name (default: Qwen/Qwen3.5-4B)")
+    parser.add_argument("--reranker", type=str, default="Qwen/Qwen3-Reranker-0.6B",
+                        help="Reranker model name")
+    parser.add_argument("--thinking", action="store_true",
+                        help="Enable thinking mode for stronger reasoning (uses more VRAM & tokens)")
+    parser.add_argument("--max_new_tokens", type=int, default=None,
+                        help="Override max new tokens (default: 64 no-think, 1024 thinking)")
+    parser.add_argument("--show_thinking", action="store_true",
+                        help="Print the model's thinking chain (requires --thinking)")
+    return parser.parse_args()
 
 
-    def retrieve(self, question: str, k: int, device: str) -> list[dict]:
-        with open(CHUNKS_FILE, "r") as f:
-            docs = json.load(f)
+def print_result(result: dict, show_thinking: bool = False):
+    if show_thinking and result.get("thinking"):
+        print(f"\n{'─'*60}")
+        print("  [Thinking]")
+        print(textwrap.fill(
+            result["thinking"], width=100,
+            initial_indent="  ", subsequent_indent="  "
+        ))
+    print(f"\n{'='*60}")
+    print(f"  Answer: {result['answer']}")
+    print(f"  Retrieved: {result['retrieved']} candidates → {result['reranked']} reranked")
+    print(f"{'─'*60}")
+    print("  Sources:")
+    for i, src in enumerate(result["sources"], 1):
+        score = f"{src['reranker_score']:.3f}" if src["reranker_score"] is not None else "n/a"
+        preview = textwrap.shorten(src["preview"], width=200, placeholder="...")
+        print(f"  [{i}] score={score} | {src['source']}")
+        print(f"       {preview}")
+    print(f"{'='*60}\n")
 
-        index = faiss.read_index(os.path.join(VECTORSTORE_DIR, INDEX_FILE))
-        q_vec = self.embed_question(question, device)
 
-        distances, indices = index.search(q_vec, k)
+def main():
+    args = parse_args()
 
-        results = []
-        for dist, idx in zip(distances[0], indices[0]):
-            if idx < 0 or idx >= len(docs):
-                continue
-            chunk = docs[idx]
-            results.append({"text": chunk["text"], "score": float(dist)})
-        return results
+    print("Loading vectorstore...")
+    store = VectorStore(device="cuda")
 
+    print(f"Loading pipeline (LLM={args.model}, Reranker={args.reranker}, thinking={args.thinking})...")
+    pipeline = RAGPipeline(
+        store=store,
+        K=args.K,
+        k=args.k,
+        reranker_model=args.reranker,
+        llm_model=args.model,
+        thinking=args.thinking,
+        max_new_tokens=args.max_new_tokens,
+    )
 
-    def call_llm(self, context: str, question: str, max_tokens: int) -> str:
-        user_content = f"{SYSTEM_PROMPT}\n\n{self.build_prompt(context, question)}"
-        payload = {
-            "model": MODEL_NAME,
-            "messages": [
-                {"role": "user", "content": user_content},
-            ],
-            "max_tokens": max_tokens,
-            "temperature": 0.0,
-        }
-        resp = requests.post(VLLM_URL, json=payload, timeout=120)
-        resp.raise_for_status()
-        return resp.json()["choices"][0]["message"]["content"].strip()
+    mode_label = "[THINKING ON]" if args.thinking else "[THINKING OFF]"
+    print(f"\nBio-Med RAG ready {mode_label}. Type your question (or 'exit' to quit).\n")
 
-    def chat(self, question, k = 5):
+    while True:
+        try:
+            question = input("Question> ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nBye!")
+            break
 
-        chunks = self.retrieve(question, k, device)
-        context = "\n\n".join(c["text"] for c in chunks)
-        answer = self.call_llm(context, question, max_tokens=2)
+        if not question:
+            continue
+        if question.lower() in {"exit", "quit", "q"}:
+            print("Bye!")
+            break
 
-        return answer
+        result = pipeline.run(question)
+        print_result(result, show_thinking=args.show_thinking)
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Bio-Med RAG — query the pipeline")
-    parser.add_argument("--question",    "-q", required=True,          help="Medical question to answer")
-    parser.add_argument("--top-k",       "-k", type=int, default=TOP_K, help=f"Number of chunks to retrieve (default: {TOP_K})")
-    parser.add_argument("--max-tokens",        type=int, default=2,     help="Max tokens for LLM response (default: 2)")
-    parser.add_argument("--show-sources",      action="store_true",     help="Print retrieved source chunks")
-    args = parser.parse_args()
-
-    rag = Bio_RAG()
-
-    print(f"\nQuestion : {args.question}")
-    print(f"Retrieving top-{args.top_k} chunks...\n")
-
-    chunks = rag.retrieve(args.question, k=args.top_k, device=device)
-    context = "\n\n".join(c["text"] for c in chunks)
-
-    print("Generating answer...\n")
-    answer = rag.call_llm(context, args.question, max_tokens=args.max_tokens)
-
-    print("=" * 60)
-    print("ANSWER:")
-    print("=" * 60)
-    print(answer)
-
-    if args.show_sources:
-        print(f"\n{'=' * 60}")
-        print(f"SOURCES ({len(chunks)} chunks):")
-        print("=" * 60)
-        for i, chunk in enumerate(chunks, 1):
-            print(f"\n--- Chunk {i} (score: {chunk['score']:.4f}) ---")
-            print(chunk["text"][:300] + ("..." if len(chunk["text"]) > 300 else ""))
+    main()

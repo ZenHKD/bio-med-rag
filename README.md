@@ -12,26 +12,22 @@ Members:
 
 ```
 bio-med-rag/
-├── configs/
-│   ├── config.yaml               # base config (git-tracked)
-│   └── config.local.yaml.example # contributor override template
 ├── data/
 │   ├── external/                 # raw datasets (gitignored)
 │   └── vectorstore/              # persisted embeddings (gitignored)
 ├── notebooks/                    # exploration notebooks
 ├── scripts/
 │   ├── ingest.py                 # ingest data
-│   └── query.py                  # run RAG query
+│   └── query.py                  # run RAG demo in CLI
 ├── src/
-│   ├── config/
-│   ├── data/
-│   ├── embeddings/
-│   ├── vectorstore/
-│   ├── retriever/
-│   ├── llm/
-│   ├── pipeline/
-│   └── evaluation/
-├── .env.example
+│   ├── data/                     # data processing
+│   ├── embeddings/               # embedding models
+│   ├── vectorstore/              # vector store
+│   ├── retriever/                # retriever
+│   ├── llm/                      # LLM
+│   ├── pipeline/                 # RAG pipeline (fully deploy with LangChain and vLLM)
+│   ├── evaluation/               # evaluation
+│   └── serving/                  # serving
 ├── .gitignore
 ├── requirements.txt
 ├── set_up_dataset.py
@@ -40,4 +36,4 @@ bio-med-rag/
 
 # Pipeline
 
-Query → [Encoder] → Retrieve Chunks → [Reranker?] → [Decoder LLM] → Generated Answer
+Query → [Encoder] → Retrieve Chunks → [Reranker] → [Decoder LLM] → Generated Answer
