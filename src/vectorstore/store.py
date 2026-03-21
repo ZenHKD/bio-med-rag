@@ -29,6 +29,7 @@ class VectorStore:
         embed_model_name: str = DEFAULT_EMBED_MODEL,
         batch_size: int = DEFAULT_BATCH_SIZE,
         device: str = "cuda",
+        embed_device: str = "cpu",   # keep encoder on CPU to free GPU for LLM + reranker
     ):
         self.embed_model_name = embed_model_name
         self.batch_size = batch_size
@@ -43,8 +44,8 @@ class VectorStore:
         with open(chunks_path, "r") as f:
             self.chunks = [json.loads(line) for line in f if line.strip()]
 
-        # Pre-load encoder once so search() never reloads weights
-        self._encoder = Encoder([], batch_size, embed_model_name, device)
+        # Pre-load encoder on CPU — saves ~1.5GB GPU VRAM for LLM + reranker
+        self._encoder = Encoder([], batch_size, embed_model_name, embed_device)
 
     def search(self, query: str, k: int = 5) -> List[Document]:
         q_vec = self._encoder.encode_query(query).astype("float32")

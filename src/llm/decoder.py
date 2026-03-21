@@ -21,7 +21,6 @@ def _load_prompt(path: str) -> str:
     with open(path, "r") as f:
         return f.read()
 
-
 class Decoder:
     """
     Wraps a HuggingFace causal LM for single-letter MCQ answer generation.
