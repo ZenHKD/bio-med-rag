@@ -11,3 +11,6 @@ configs/config.local.yaml
 
 src/evaluation/llm_eval_medmcqa.json
 src/evaluation/llm_eval_medqa.json
+
+.direnv
+.devenv

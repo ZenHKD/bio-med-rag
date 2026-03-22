@@ -58,7 +58,7 @@ Answer:
 if __name__ == "__main__":
 
     # load model
-    llm = QwenMCQ(device=device)
+    llm = QwenMCQ()
 
     # load dataset
     with open(MEDMCQA_PATH) as f:

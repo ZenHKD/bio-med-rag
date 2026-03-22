@@ -38,3 +38,10 @@ bio-med-rag/
 # Pipeline
 
 Query → [Encoder] → Retrieve Chunks → [Reranker] → [Decoder LLM] → Generated Answer
+
+# Demo
+
+```
+cd src/demo
+streamlit run app.py
+```
