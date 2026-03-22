@@ -46,7 +46,7 @@ class _Reranker:
     """
 
     def __init__(self, model_name: str = DEFAULT_RERANKER_MODEL, device: Optional[str] = None):
-        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = device or "cpu"  # keep reranker on CPU — frees ~1.2 GB VRAM for the LLM
         print(f"[Reranker] Loading {model_name} on {self.device}...")
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, padding_side="left", trust_remote_code=True

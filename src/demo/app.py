@@ -14,9 +14,7 @@ import time
 from pathlib import Path
 
 import streamlit as st
-import multiprocessing
 
-multiprocessing.set_start_method("spawn", force=True)
 
 
 # ── Path setup ────────────────────────────────────────────────────────────────
@@ -50,7 +48,6 @@ def load_pipeline(
     llm_model: str,
     reranker_model: str,
     thinking: bool,
-    max_new_tokens: int | None,
 ):
     from src.pipeline.rag_chain import RAGPipeline
 
@@ -61,9 +58,6 @@ def load_pipeline(
         llm_model=llm_model,
         reranker_model=reranker_model,
         thinking=thinking,
-        max_new_tokens=max_new_tokens
-        if (max_new_tokens and max_new_tokens > 0)
-        else None,
     )
 
 
@@ -74,7 +68,7 @@ with st.sidebar:
     st.header("⚙️ Configuration")
 
     st.subheader("Hardware")
-    device = st.selectbox("Device", ["cpu"], index=0)
+    device = st.selectbox("Device", ["cuda", "cpu"], index=0)
 
     st.subheader("Models")
     llm_model = st.text_input("LLM model", value="Qwen/Qwen3.5-4B")
@@ -131,7 +125,6 @@ try:
         llm_model,
         reranker_model,
         thinking,
-        max_new_tokens or None,
     )
 except FileNotFoundError as e:
     st.error(
@@ -280,7 +273,8 @@ if submitted_question:
     with st.chat_message("assistant"):
         with st.spinner("Searching corpus and generating answer…"):
             t0 = time.perf_counter()
-            result = pipeline.run(submitted_question)
+            _tokens = int(max_new_tokens) if max_new_tokens and max_new_tokens > 0 else None
+            result = pipeline.run(submitted_question, max_new_tokens=_tokens)
             elapsed = time.perf_counter() - t0
 
         assistant_msg = {

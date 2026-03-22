@@ -27,7 +27,7 @@ bio-med-rag/
 │   ├── retriever/
 │   ├── llm/
 │   ├── pipeline/                 # RAG pipeline (fully deploy with LangChain and vLLM)
-│   ├──evaluation/
+│   ├── evaluation/
 │   └── serving/
 ├── .gitignore
 ├── requirements.txt

@@ -37,14 +37,15 @@ class Decoder:
         max_new_tokens: int = None,
         thinking: bool = False,
     ):
-        self.model_name     = model_name
+        self.model_name      = model_name
         self.prompt_template = _load_prompt(prompt_path)
-        self.thinking       = thinking
-        # Auto-scale token budget: thinking needs room for full reasoning chain
+        self.thinking        = thinking
+        # Default token budget stored as a fallback; callers can override per-call.
+        # Auto-scale: thinking needs room for full reasoning chain.
         if max_new_tokens is None:
-            self.max_new_tokens = 2048 if thinking else 64
+            self.default_max_new_tokens = 2048 if thinking else 64
         else:
-            self.max_new_tokens = max_new_tokens
+            self.default_max_new_tokens = max_new_tokens
 
         print(f"[Decoder] Loading {model_name} in 4-bit NF4...")
 
@@ -72,7 +73,9 @@ class Decoder:
         return [{"role": "user", "content": user_content}]
 
     # ------------------------------------------------------------------
-    def generate(self, context: str, question: str) -> str:
+    def generate(self, context: str, question: str, max_new_tokens: int = None) -> str:
+        """max_new_tokens overrides the instance default when provided."""
+        _max_tokens = max_new_tokens if max_new_tokens is not None else self.default_max_new_tokens
         """
         Generate an MCQ answer letter (A–E).
 
@@ -99,7 +102,7 @@ class Decoder:
             output_ids = self.model.generate(
                 input_ids,
                 attention_mask=attention_mask,
-                max_new_tokens=self.max_new_tokens,
+                max_new_tokens=_max_tokens,
                 do_sample=False,
                 pad_token_id=self.tokenizer.eos_token_id,
             )

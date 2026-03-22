@@ -72,7 +72,7 @@ class RAGPipeline:
         print(f"[RAGPipeline] Pre-loading reranker...")
         _get_reranker(reranker_model)
 
-    def run(self, question: str) -> dict:
+    def run(self, question: str, max_new_tokens: int = None) -> dict:
         """
         Run the full pipeline for a single question.
 
@@ -101,7 +101,7 @@ class RAGPipeline:
         context = _build_context(reranked)
 
         # 4. Generate
-        gen = self.decoder.generate(context=context, question=question)
+        gen = self.decoder.generate(context=context, question=question, max_new_tokens=max_new_tokens)
 
         # 5. Collect source metadata
         sources = [
