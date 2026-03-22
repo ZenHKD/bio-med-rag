@@ -6,7 +6,6 @@ Rules:
 - If the context is empty, irrelevant, or insufficient, output: E
 - No explanation. No punctuation. No extra words.
 
-
 ---
 
 Context:

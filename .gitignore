@@ -8,3 +8,6 @@ configs/config.local.yaml
 
 *__pycache__*
 /logs
+
+src/evaluation/llm_eval_medmcqa.json
+src/evaluation/llm_eval_medqa.json

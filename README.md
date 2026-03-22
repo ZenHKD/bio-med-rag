@@ -20,14 +20,15 @@ bio-med-rag/
 │   ├── ingest.py                 # ingest data
 │   └── query.py                  # run RAG demo in CLI
 ├── src/
-│   ├── data/                     # data processing
-│   ├── embeddings/               # embedding models
-│   ├── vectorstore/              # vector store
-│   ├── retriever/                # retriever
-│   ├── llm/                      # LLM
+│   ├── config/
+│   ├── data/
+│   ├── embeddings/
+│   ├── vectorstore/
+│   ├── retriever/
+│   ├── llm/
 │   ├── pipeline/                 # RAG pipeline (fully deploy with LangChain and vLLM)
-│   ├── evaluation/               # evaluation
-│   └── serving/                  # serving
+│   ├──evaluation/
+│   └── serving/
 ├── .gitignore
 ├── requirements.txt
 ├── set_up_dataset.py
