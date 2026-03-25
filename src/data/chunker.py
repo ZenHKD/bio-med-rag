@@ -75,5 +75,5 @@ if __name__ == "__main__":
         for chunk in chunks:
             f.write(json.dumps(chunk, ensure_ascii=False) + "\n")
 
-    print(f"Saved {len(chunks)} chunks → {out_path}")
+    print(f"Saved {len(chunks)} chunks -> {out_path}")
     print("Done!")

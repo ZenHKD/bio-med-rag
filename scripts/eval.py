@@ -104,7 +104,7 @@ def save_results(result: EvalResult, path: str):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, indent=2, ensure_ascii=False)
-    print(f"Results saved → {path}")
+    print(f"Results saved -> {path}")
 
 
 # ---------------------------------------------------------------------------
@@ -118,7 +118,7 @@ def main():
         items = load_medqa(n=n, seed=args.seed)
     else:
         items = load_medmcqa(n=n, seed=args.seed)
-    print(f"  → {len(items)} questions")
+    print(f"  -> {len(items)} questions")
 
     # 2. Build pipeline (thinking=False for eval speed)
     print("\nLoading vectorstore...")

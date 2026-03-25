@@ -169,7 +169,7 @@ with tab_free:
 
 
 def render_sources(sources: list, retrieved: int, reranked: int, latency: float):
-    label = f"{retrieved} candidates → {reranked} reranked · {latency:.1f}s"
+    label = f"{retrieved} candidates -> {reranked} reranked · {latency:.1f}s"
     with st.expander(label):
         if not sources:
             st.info("No source metadata returned.")

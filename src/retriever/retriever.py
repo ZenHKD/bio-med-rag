@@ -2,7 +2,7 @@
 Retriever module: Dense retrieval (FAISS) + Qwen3-Reranker-0.6B reranking.
 
 Pipeline:
-    query → dense_retrieve (Top-K=100) → rerank (Top-k=5) → List[Document]
+    query -> dense_retrieve (Top-K=100) -> rerank (Top-k=5) -> List[Document]
 """
 
 import torch
@@ -169,7 +169,7 @@ def retrieve_and_rerank(
     reranker_batch: int = 8,
 ) -> List[Document]:
     """
-    Full pipeline convenience function: dense retrieve → rerank.
+    Full pipeline convenience function: dense retrieve -> rerank.
     """
     candidates = dense_retrieve(store, query, K=K)
     return rerank(candidates, query, k=k, model_name=reranker_model, reranker_batch=reranker_batch)

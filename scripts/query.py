@@ -51,7 +51,7 @@ def print_result(result: dict, show_thinking: bool = False):
         ))
     print(f"\n{'='*60}")
     print(f"  Answer: {result['answer']}")
-    print(f"  Retrieved: {result['retrieved']} candidates → {result['reranked']} reranked")
+    print(f"  Retrieved: {result['retrieved']} candidates -> {result['reranked']} reranked")
     print(f"{'─'*60}")
     print("  Sources:")
     for i, src in enumerate(result["sources"], 1):

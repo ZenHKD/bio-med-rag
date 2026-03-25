@@ -62,5 +62,5 @@ if __name__ == "__main__":
                 "text":     doc["text"]
             }, ensure_ascii=False) + "\n")
 
-    print(f"Saved index ({dim}-dim, {len(texts)} vectors) → {VECTORSTORE_DIR}")
+    print(f"Saved index ({dim}-dim, {len(texts)} vectors) -> {VECTORSTORE_DIR}")
     print("Done!")

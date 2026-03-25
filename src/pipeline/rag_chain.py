@@ -3,11 +3,11 @@ RAG Pipeline (Phase 1 — HuggingFace, for benchmarking).
 
 Flow:
     question
-      → dense_retrieve (Top-K FAISS candidates)
-      → rerank (Qwen3-Reranker-0.6B, Top-k)
-      → build context string
-      → Decoder.generate (Qwen3.5-4B 4-bit NF4)
-      → answer letter (A–E)
+      -> dense_retrieve (Top-K FAISS candidates)
+      -> rerank (Qwen3-Reranker-0.6B, Top-k)
+      -> build context string
+      -> Decoder.generate (Qwen3.5-4B 4-bit NF4)
+      -> answer letter (A–E)
 
 Phase 2: swap this file with src/serving/ (LangChain + vLLM).
 """
@@ -33,7 +33,7 @@ def _build_context(docs: List[Document], max_chars: int = _MAX_CHUNK_CHARS) -> s
 
 class RAGPipeline:
     """
-    End-to-end RAG pipeline:  retrieve → rerank → generate.
+    End-to-end RAG pipeline:  retrieve -> rerank -> generate.
 
     Args:
         store:          Loaded VectorStore (FAISS index + chunks).

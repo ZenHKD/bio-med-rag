@@ -27,8 +27,7 @@ bio-med-rag/
 │   ├── retriever/
 │   ├── llm/
 │   ├── pipeline/                 # RAG pipeline (fully deploy with LangChain and vLLM)
-│   ├── evaluation/
-│   └── serving/
+│   └── evaluation/
 ├── .gitignore
 ├── requirements.txt
 ├── set_up_dataset.py
